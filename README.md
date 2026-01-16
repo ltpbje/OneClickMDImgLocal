@@ -72,19 +72,21 @@ npm start
 #### 转换后
 
 ```markdown
-![示例图片](assets/image_1768491853469_567.jpg)
+![示例图片](./assets/image_1768491853469_567.jpg)
 ```
 
 ## 项目结构
 
 ```
-├── index.js                  # 主脚本文件
+├── index.js                  # 主脚本文件（包含详细注释）
 ├── package.json              # 项目配置文件
+├── package-lock.json         # 依赖锁定文件
 ├── README.md                 # 项目说明文档
-├── assets/                   # 图片存储目录
+├── .gitignore                # Git 忽略文件配置
+├── assets/                   # 图片存储目录（与 Markdown 文件同路径）
 │   └── image_*.jpg           # 下载的图片文件
 ├── <原始文件>.md             # 输入的 Markdown 文件
-└── <原始文件>_local.md       # 输出的 Markdown 文件
+└── <原始文件>_local.md       # 输出的 Markdown 文件（与原始文件同路径）
 ```
 
 ## 技术实现
@@ -92,32 +94,37 @@ npm start
 ### 核心功能
 
 1. **图片提取**：使用正则表达式 `!\[(.*?)\]\((https?:\/\/.*?)\)` 提取在线图片
-2. **图片下载**：使用 `axios` 库下载图片
+2. **图片下载**：使用 `axios` 库下载图片到本地
 3. **文件操作**：使用 Node.js 内置的 `fs` 和 `path` 模块处理文件和路径
-4. **路径转换**：将绝对路径转换为相对路径，并使用正斜杠分隔
+4. **路径转换**：基于 `savePath` 计算相对路径，确保路径始终为 `./assets/` 格式
+5. **目录创建**：自动创建 `assets` 目录（如果不存在）
+6. **新文件生成**：在原始文件同路径生成新的 Markdown 文件
 
 ### 依赖库
 
 - **axios**：用于下载网络图片
+- **readline**：用于交互式命令行输入（Node.js 内置模块）
+- **fs**：用于文件系统操作（Node.js 内置模块）
+- **path**：用于路径处理（Node.js 内置模块）
 
 ## 自定义配置
 
 ### 修改图片存储目录
 
-如需修改图片存储目录，可以修改 `index.js` 文件中的以下代码：
+如需修改图片存储目录，可以修改 `index.js` 文件中的以下代码（大约第106行）：
 
 ```javascript
-const savePath = path.join(__dirname, 'assets', fileName);
+const savePath = path.join(inputDir, 'assets', fileName);
 ```
 
 将 `'assets'` 替换为您想要的目录名称。
 
 ### 修改输出文件名格式
 
-如需修改输出文件名格式，可以修改 `index.js` 文件中的以下代码：
+如需修改输出文件名格式，可以修改 `index.js` 文件中的以下代码（大约第121行）：
 
 ```javascript
-const outputFile = path.join(__dirname, `${path.basename(markdownFile, '.md')}_local.md`);
+const outputFile = path.join(inputDir, `${path.basename(markdownFile, '.md')}_local.md`);
 ```
 
 ## 注意事项
@@ -143,6 +150,12 @@ MIT License
 - 提交 Issue：<issues-url>
 
 ## 更新日志
+
+### v1.1.0
+- 修复了图片路径生成错误的问题
+- 改进了相对路径计算逻辑，确保路径始终以 `./assets/` 开头
+- 移除了对 `process.argv[2]` 的依赖，提高了代码的健壮性
+- 增强了代码注释，提高了可维护性
 
 ### v1.0.0
 - 初始版本发布
