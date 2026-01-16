@@ -45,8 +45,10 @@ async function downloadImage(url, savePath) {
         fs.writeFileSync(savePath, imageBuffer);
         console.log(`下载成功: ${url} -> ${savePath}`);
 
-        // 返回相对路径，使用正斜杠作为分隔符
-        return path.relative(path.dirname(process.argv[2] || __dirname), savePath).replace(/\\/g, '/');
+        // 返回以 './assets' 开头的相对路径，使用正斜杠作为分隔符
+        const relativePath = path.relative(path.dirname(process.argv[2] || __dirname), savePath).replace(/\\/g, '/');
+        // 确保路径以 './' 开头
+        return relativePath.startsWith('./') ? relativePath : `./${relativePath}`;
     } catch (error) {
         console.error(`下载失败 ${url}:`, error.message);
         throw error;
